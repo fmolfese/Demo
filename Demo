@@ -1,0 +1,71 @@
+
+import math
+import matplotlib.pyplot as plt
+
+# My Experiment Values
+wavelength = 532*10**-9 # 532 nm (green laser) in meters
+n_medium = 1.33       # Refractive index of freshwater
+n_particle = 1.49     # Refractive index of plastic
+
+#Calculate wavenumber k
+k = 2 * math.pi / wavelength
+print(k)
+
+#Calculate relative refractive index m
+m = n_particle/n_medium
+print(f"Relative Refractive Index {m:.2f}")
+
+
+
+#Calculate size parameter x and scattering efficiency Q_scat for small group 10 to 106 um
+x_small_vals = []
+q_small_vals = []
+for size in [10, 30, 50, 70, 90, 106]:
+    d_m = size * 10**-6 # Convert micrometers to meters
+    x = math.pi * d_m / wavelength
+    x_small_vals.append(x)
+    print(f"Particle {size} µm: x = {x:.2f}")
+
+    #Calculate Q_scat for small particles (x << 1)
+    if x > 1:
+        Q_scat = 2
+
+    else:
+        #Rayleigh scattering approximation for small particles
+        Q_scat = (8/3) * x**4 * ((m**2 -1) / (m**2 + 2))**2
+    q_small_vals.append(Q_scat)
+    print(f"Scattering Efficiency {Q_scat:.2f}")
+
+#Calculate the size parameter x for large group 212 to 250 um
+x_large_vals = []
+q_large_vals = []
+for size in [212, 250]:
+    um = size * 10**-6 # Convert micrometers to meters
+    x = math.pi * um / wavelength
+    x_large_vals.append(x)
+    print(f"Particle {size} µm: x = {x:.2f}")
+
+    # Calculate the scattering efficiency Q_sca for small particles (x << 1)
+    if x > 1:
+        Q_scat = 2
+    else:
+        #Rayleigh scattering approximation for small particles
+        Q_scat = (8/3) * x**4 * ((m**2 -1) / (m**2 + 2))**2
+    q_large_vals.append(Q_scat)
+    print(f"Scattering Efficiency {Q_scat:.2f}")
+
+
+#Since Q_scat is 2 for all particles used, C_scat= 2* pi * r^2
+for size in [10, 30, 50, 70, 90, 106, 212, 250]:
+    r = (size * 10**-6) / 2 # Convert micrometers to meters and calculate radius
+    C_scat = 2 * math.pi * r**2
+    print(f"Particle {size} µm: Scattering Cross Section C_scat = {C_scat:.2e} m^2")
+
+
+# Plotting
+x_vals = x_small_vals + x_large_vals
+q_vals = q_small_vals + q_large_vals
+plt.plot(x_vals, q_vals, 'o-')
+plt.xlabel('Size Parameter x')
+plt.ylabel('Scattering Efficiency Q_scat')
+plt.show()
